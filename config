@@ -1,0 +1,4 @@
+database=flexsql.db
+user=admin 
+ramdisk=/mnt/ramdisk
+USE_HISTORY=n

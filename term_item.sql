@@ -1,0 +1,91 @@
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE term_item(id integer PRIMARY KEY,item_id integer, term_id integer, ref_id integer);
+INSERT INTO "term_item" VALUES(1,1,1,NULL);
+INSERT INTO "term_item" VALUES(2,1,12,NULL);
+INSERT INTO "term_item" VALUES(3,2,1,NULL);
+INSERT INTO "term_item" VALUES(4,2,12,NULL);
+INSERT INTO "term_item" VALUES(5,3,1,NULL);
+INSERT INTO "term_item" VALUES(6,3,12,NULL);
+INSERT INTO "term_item" VALUES(7,4,1,NULL);
+INSERT INTO "term_item" VALUES(8,4,12,NULL);
+INSERT INTO "term_item" VALUES(9,5,1,NULL);
+INSERT INTO "term_item" VALUES(10,5,12,NULL);
+INSERT INTO "term_item" VALUES(11,6,1,NULL);
+INSERT INTO "term_item" VALUES(12,6,12,NULL);
+INSERT INTO "term_item" VALUES(13,7,1,NULL);
+INSERT INTO "term_item" VALUES(14,7,12,NULL);
+INSERT INTO "term_item" VALUES(15,8,1,NULL);
+INSERT INTO "term_item" VALUES(16,8,12,NULL);
+INSERT INTO "term_item" VALUES(17,9,1,NULL);
+INSERT INTO "term_item" VALUES(18,9,12,NULL);
+INSERT INTO "term_item" VALUES(19,10,1,NULL);
+INSERT INTO "term_item" VALUES(20,10,12,NULL);
+INSERT INTO "term_item" VALUES(21,11,1,NULL);
+INSERT INTO "term_item" VALUES(22,11,11,NULL);
+INSERT INTO "term_item" VALUES(23,12,1,NULL);
+INSERT INTO "term_item" VALUES(24,12,11,NULL);
+INSERT INTO "term_item" VALUES(25,13,1,NULL);
+INSERT INTO "term_item" VALUES(26,13,11,NULL);
+INSERT INTO "term_item" VALUES(27,14,1,NULL);
+INSERT INTO "term_item" VALUES(28,14,11,NULL);
+INSERT INTO "term_item" VALUES(29,15,1,NULL);
+INSERT INTO "term_item" VALUES(30,15,11,NULL);
+INSERT INTO "term_item" VALUES(31,16,1,NULL);
+INSERT INTO "term_item" VALUES(32,16,11,NULL);
+INSERT INTO "term_item" VALUES(33,17,1,NULL);
+INSERT INTO "term_item" VALUES(34,17,11,NULL);
+INSERT INTO "term_item" VALUES(35,18,1,NULL);
+INSERT INTO "term_item" VALUES(36,18,11,NULL);
+INSERT INTO "term_item" VALUES(37,19,1,NULL);
+INSERT INTO "term_item" VALUES(38,19,11,NULL);
+INSERT INTO "term_item" VALUES(39,20,1,NULL);
+INSERT INTO "term_item" VALUES(40,20,11,NULL);
+INSERT INTO "term_item" VALUES(41,21,26,1);--Sys-Admins
+INSERT INTO "term_item" VALUES(42,22,26,2);--local-Admins
+INSERT INTO "term_item" VALUES(43,23,26,3);--department-Admins
+INSERT INTO "term_item" VALUES(44,24,26,4); --group G1
+INSERT INTO "term_item" VALUES(45,25,26,5); --group G2
+INSERT INTO "term_item" VALUES(46,11,13,1); 
+INSERT INTO "term_item" VALUES(47,1,14,1);
+INSERT INTO "term_item" VALUES(48,1,15,1); 
+INSERT INTO "term_item" VALUES(49,1,16,1);
+INSERT INTO "term_item" VALUES(50,12,13,4); --B to group G1 
+INSERT INTO "term_item" VALUES(51,13,13,4); --C to group G1
+INSERT INTO "term_item" VALUES(52,26,26,6); --group profs 
+INSERT INTO "term_item" VALUES(53,27,26,7); --group students
+INSERT INTO "term_item" VALUES(54,NULL,NULL,NULL);
+INSERT INTO "term_item" VALUES(55,NULL,NULL,NULL);
+INSERT INTO "term_item" VALUES(56,NULL,NULL,NULL);
+INSERT INTO "term_item" VALUES(57,NULL,NULL,NULL);
+INSERT INTO "term_item" VALUES(58,16,13,7); --student
+INSERT INTO "term_item" VALUES(59,17,13,7); --student
+INSERT INTO "term_item" VALUES(60,18,13,7); --student
+INSERT INTO "term_item" VALUES(61,33,1,NULL);
+INSERT INTO "term_item" VALUES(62,28,26,61); --campus
+INSERT INTO "term_item" VALUES(63,34,1,NULL);
+INSERT INTO "term_item" VALUES(64,29,26,63); --Building1
+INSERT INTO "term_item" VALUES(65,35,1,NULL);
+INSERT INTO "term_item" VALUES(66,30,26,65); --Building2
+INSERT INTO "term_item" VALUES(67,34,NULL,62);
+INSERT INTO "term_item" VALUES(68,35,NULL,62);
+INSERT INTO "term_item" VALUES(69,36,1,NULL);
+INSERT INTO "term_item" VALUES(70,31,26,69);  --room R1
+INSERT INTO "term_item" VALUES(71,37,1,NULL);
+INSERT INTO "term_item" VALUES(72,32,26,71);  --room R2
+INSERT INTO "term_item" VALUES(73,44,17,83);
+INSERT INTO "term_item" VALUES(74,43,26,73); --PTermin
+INSERT INTO "term_item" VALUES(75,4,20,69); --G1 can allow R1 
+INSERT INTO "term_item" VALUES(76,37,NULL,69); --testevent in R1?
+INSERT INTO "term_item" VALUES(77,44,17,73); --occurence date
+INSERT INTO "term_item" VALUES(78,12,19,76); -- request of B
+INSERT INTO "term_item" VALUES(79,13,20,76); -- accepted of C
+INSERT INTO "term_item" VALUES(80,16,22,73);
+INSERT INTO "term_item" VALUES(81,17,22,73);
+INSERT INTO "term_item" VALUES(82,18,22,73);
+INSERT INTO "term_item" VALUES(83,39,1,NULL);
+INSERT INTO "term_item" VALUES(84,39,35,NULL);
+INSERT INTO "term_item" VALUES(85,45,26,83);
+INSERT INTO "term_item" VALUES(86,46,36,83);
+INSERT INTO "term_item" VALUES(87,1,14,83);
+COMMIT;
