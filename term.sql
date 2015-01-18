@@ -46,7 +46,7 @@ INSERT INTO "term" VALUES(20,'accept',2);
 INSERT INTO "term" VALUES(21,'privious_version',2);
 INSERT INTO "term" VALUES(22,'participant',2);
 INSERT INTO "term" VALUES(23,'place',2); --room,location
-INSERT INTO "term" VALUES(24,'',2);
+INSERT INTO "term" VALUES(24,'form',2); --input mask
 INSERT INTO "term" VALUES(25,'',2);
 --objects and elements
 INSERT INTO "term" VALUES(26,'name',3);
