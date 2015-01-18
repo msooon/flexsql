@@ -93,9 +93,25 @@ INSERT INTO "term_item" VALUES(88,48,1,NULL);
 INSERT INTO "term_item" VALUES(89,48,24,NULL); -- form profile-def
 INSERT INTO "term_item" VALUES(90,NULL,26,88);
 INSERT INTO "term_item" VALUES(91,NULL,27,88);
-INSERT INTO "term_item" VALUES(90,NULL,28,88);
-INSERT INTO "term_item" VALUES(90,NULL,29,88);
-INSERT INTO "term_item" VALUES(90,NULL,30,88);
-	
+INSERT INTO "term_item" VALUES(92,NULL,28,88);
+INSERT INTO "term_item" VALUES(93,NULL,29,88);
+INSERT INTO "term_item" VALUES(94,NULL,30,88);
+--data of students	
+INSERT INTO "term_item" VALUES(95,49,26,31);
+INSERT INTO "term_item" VALUES(96,50,27,31);
+INSERT INTO "term_item" VALUES(97,51,28,31);
+INSERT INTO "term_item" VALUES(98,52,29,31);
+INSERT INTO "term_item" VALUES(99,53,26,33);
+INSERT INTO "term_item" VALUES(100,54,27,33);
+INSERT INTO "term_item" VALUES(101,51,28,33);
+INSERT INTO "term_item" VALUES(102,55,29,33);
 
+
+
+
+
+
+
+
+--
 COMMIT;

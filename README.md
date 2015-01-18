@@ -16,4 +16,12 @@ flexsearch.sh [parameter] [tags]
 ./flexsearch.sh -f name -s test-exam
 
 or in verbose mode
+
 ./flexsearch.sh -v -f name -s test-exam
+
+r
+73
+
+t
+22
+

@@ -190,13 +190,16 @@ do
 		#line=`sqlite3 $database "$dbquery"`
 		sqlite3 $database "$dbquery" > "$ramdisk/viewer_ids"
 
-		itemquery="select distinct term_item.id,term.name,item.text,ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id=$ref_id;"
+		itemquery="select distinct term_item.id,term_id,term.name,item_id,item.text,ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id=$ref_id"
+		if [[ $VERBOSE = y ]] ; then
+			echo $itemquery; echo ""
+		fi
 
 		# if no access restrictions -> show it
 		if [[ -s "$ramdisk/viewer_ids" ]] ; then
 			echo ""
 		else
-			sqlite3 "$database" "$itemquery"; echo ""
+			sqlite3 -header "$database" "$itemquery"; echo ""
 		fi
 
 		while read viewer_id
@@ -205,7 +208,7 @@ do
 					#echo person_id = $person_id; echo ""
 					if [[ $viewer_id = $person_id ]]; then
 						# allowed to show results
-						sqlite3 "$database" "$itemquery"; echo ""
+						sqlite3 -header "$database" "$itemquery"; echo ""
 						break
 					fi
 						#viewer_id could be a group
@@ -221,10 +224,23 @@ do
 		echo ""
 
 	done < $ramdisk/ref_ids
+	
+	read -n 1 -p "show new (r)ef_id or (t)erm_id? " choice
+	echo ""
+	if [[ $choice == "r" ]] ; then
 
-	read -p "show id: " show_id #
+		read -p "show id: " show_id #
 
-	echo $show_id > "$ramdisk/ref_ids"
+		echo $show_id > "$ramdisk/ref_ids"
+
+
+	elif [[ $choice == "t" ]] ; then
+
+		read -p "show term_id: " term_id #
+		dbquery="select distinct id from term_item where term_id=1 and item_id in (select item_id from ($itemquery and term_id=$term_id))"
+		sqlite3 "$database" "$dbquery" > "$ramdisk/ref_ids"
+	fi
+
 
 	if [[ $VERBOSE = y ]] ; then
 		echo $dbquery
