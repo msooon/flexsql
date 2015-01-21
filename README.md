@@ -13,12 +13,11 @@ flexsearch.sh [parameter] [tags]
 
 #test
 
-./flexsearch.sh -f name -s test-exam
+ ./flexsearch.sh -v -f name -s test-exam written english science
 
 or in verbose mode
 
-./flexsearch.sh -v -f name -s test-exam
-
+ ./flexsearch.sh -v -f name -s test-exam written english science
 r
 73
 

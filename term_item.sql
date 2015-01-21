@@ -106,8 +106,10 @@ INSERT INTO "term_item" VALUES(100,54,27,33);
 INSERT INTO "term_item" VALUES(101,51,28,33);
 INSERT INTO "term_item" VALUES(102,55,29,33);
 
-
-
+-- sample tags
+INSERT INTO "term_item" VALUES(103,56,25,83);
+INSERT INTO "term_item" VALUES(104,57,25,83);
+INSERT INTO "term_item" VALUES(105,58,25,83);
 
 
 
