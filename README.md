@@ -18,6 +18,7 @@ flexsearch.sh [parameter] [tags]
 or in verbose mode
 
  ./flexsearch.sh -v -f name -s test-exam written english science
+
 r
 73
 
