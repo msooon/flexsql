@@ -22,7 +22,7 @@ categories="''"
 ex_category="''"
 offset=""
 parameters="" #for history
-sort_order="category_match desc, rating desc, date desc" #Standard: Bestbewerteste und neueste zuerst
+sort_order="category_match desc" #, date desc" #Standard: Bestbewerteste und neueste zuerst
 hits_before_asking=4 #Ask for proceeding if there are more than defined hits
 search_date=""
 USE_HISTORY=y
@@ -75,9 +75,9 @@ while getopts 'bs:d:f:o:n:x:r:t:w:y:z:eilgamopcvuqkh' OPTION ; do
 		p)      USE_HISTORY=n 
 			;;
 		r)      EXCERPT=y    #
-						EXCERPT_LINES=$OPTARG
-			            parameters="$parameters""r$OPTARG" #for history
-									            ;;
+			EXCERPT_LINES=$OPTARG
+			parameters="$parameters""r$OPTARG" #for history
+			;;
 		t)      #only in combination with parameter 'o' (LIMIT)
 			offset="OFFSET $OPTARG"
 			parameters="$parameters""t$OPTARG" #for history
@@ -89,25 +89,40 @@ while getopts 'bs:d:f:o:n:x:r:t:w:y:z:eilgamopcvuqkh' OPTION ; do
 			KEEP_RESULTS=y
 			parameters="$parameters""k" #for history
 			;;
-		
-		\?)        echo "Unbekannte Option \"-$OPTARG\"." >&2
+
+		\?)        echo "Uknown option \"-$OPTARG\"." >&2
 			usage $EXIT_ERROR
 			;;
-		:)        echo "Option \"-$OPTARG\" benötigt ein Argument." >&2
+		:)        echo "option \"-$OPTARG\" needs an argument." >&2
 			usage $EXIT_ERROR
 			;;
-		*)        echo "Dies kann eigentlich gar nicht passiert sein..."
+		*)        echo "souldn't ever happen..."
 			>&2
 			usage $EXIT_BUG
 			;;
 	esac
 done
 
+# input: term_name, search_type, item.text, additional_text
+function ref_search()  
+{
+	if [[ $2 = "exact" ]]; then
+		item_text_search="='$3'"
+	elif [[ $2 = "like" ]]; then
+		item_text_search="like '%$3%'"
+	fi
+
+	echo "select distinct ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id in  (select distinct ref_id from term, item, term_item where term.name in ('$1') and item.text $item_text_search and term_item.term_id=term.id and term_item.item_id=item.id) $4"
+}
+
 > $ramdisk/tag_ids #empty file
 > $ramdisk/ref_ids #empty file
+dbquery=
 
-# Verbrauchte Argumente überspringen
+# skip allready used arguments
 shift $(( OPTIND - 1 ))
+
+TAG_QUERY_PREFIX="select ref_id, count(*) as category_match from ("
 
 # Eventuelle Tests auf min./max. Anzahl Argumente hier
 if (( $# < 1 )) ; then
@@ -121,45 +136,48 @@ else
 		one_category="`basename $ARG`"
 		#needed for history
 		categories="$categories,$one_category"
+		tagquery="`ref_search \"tag','alias\" \"exact\" $one_category`"
 
-	dbquery="select distinct ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id in  (select distinct ref_id from term, item, term_item where term.name in ('tag','alias') and item.text='$one_category' and term_item.term_id=term.id and term_item.item_id=item.id);"
-
-	if [[ $VERBOSE = y ]] ; then
-		echo $dbquery; echo ""
-	fi
-	sqlite3 $database "$dbquery" > "$ramdisk/tag_ids"
+		if [[ $VERBOSE = y ]] ; then
+			echo $tagquery; echo ""
+		fi
+		sqlite3 $database "$tagquery" > "$ramdisk/tag_ids"
 
 		if [[ -s "$ramdisk/tag_ids" ]] ; then
-	while read tag_id
-	do
-		dbquery="select distinct term_item.id from term, term_item where term_item.term_id=term.id and term.name in ('tag','alias') and ref_id in (select distinct id from term_item where term_id=1 and item_id=$tag_id);"
+			while read tag_id
+			do
+				tagquery="select distinct term_item.id from term, term_item where term_item.term_id=term.id and term.name in ('tag','alias') and ref_id in (select distinct id from term_item where term_id=1 and item_id=$tag_id)"
 
-	if [[ $VERBOSE = y ]] ; then
-		echo $dbquery; echo ""
-	fi
-		#sub ids will be added to the end of the list - this way recursive isn't needed
-		sqlite3 $database "$dbquery" >> "$ramdisk/ref_ids" 
+				if [[ $VERBOSE = y ]] ; then
+					echo $tagquery; echo ""
+				fi
+				#sub ids will be added to the end of the list - this way recursive isn't needed
+				sqlite3 $database "$tagquery" >> "$ramdisk/ref_ids" 
 
-	done < "$ramdisk/tag_ids"
-	
-	tag_ids="`cat $ramdisk/tag_ids`"
-	category_search="and ref_id in (select ref_id from term_item where term_item.id in (`echo $tag_ids | sed 's/ /,/g'`))"
+			done < "$ramdisk/tag_ids"
 
-	dbquery="select distinct ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id in  (select distinct ref_id from term, item, term_item where term.name='$field_name' and item.text like '%$search_pattern%' and term_item.term_id=term.id and term_item.item_id=item.id) $category_search;"
+			tag_ids="`cat $ramdisk/tag_ids`"
+			category_search="and ref_id in (select id from term_item where term_item.id in (`echo $tag_ids | sed 's/ /,/g'`))"
+			#echo category_search: $category_search
 
-	if [[ $VERBOSE = y ]] ; then
-		echo $dbquery; echo ""
-	fi
+			dbquery="$dbquery $TAG_QUERY_PREFIX `ref_search \"$field_name\" \"like\" \"$search_pattern\" \"$category_search\"`"
+			TAG_QUERY_PREFIX=" UNION ALL "
+			if [[ $VERBOSE = y ]] ; then
+				echo $dbquery; echo ""
+			fi
 		else
 			echo "category/tag couldn't be found"; echo ""
 		fi
 	done
 	categories=`echo $categories | sed "s/^'',//g"`
 fi
+if [[ -s "$ramdisk/tag_ids" ]] ; then
+dbquery="$dbquery) group by 1 having category_match>=$# $min_catagorys order by $sort_order $show_only $offset "
+fi
 
 #if [[ -s "$ramdisk/tag_ids" ]] ; then
 if [[ $categories = "''" ]] ; then
-		dbquery="select distinct ref_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and ref_id in  (select distinct ref_id from term, item, term_item where term.name='$field_name' and item.text like '%$search_pattern%' and term_item.term_id=term.id and term_item.item_id=item.id);"
+	dbquery="`ref_search \"$field_name\" \"like\" \"$search_pattern\"`"
 fi
 ###############################
 # Items
@@ -170,8 +188,10 @@ person_id=11
 
 category_search=""
 categories_clause=""
-
-	sqlite3 "$database" "$dbquery" > "$ramdisk/ref_ids"
+if [[ $VERBOSE = y ]] ; then
+	echo $dbquery; echo ""
+fi
+sqlite3 "$database" "$dbquery" > "$ramdisk/ref_ids"
 #result=`sqlite3 $database "$dbquery"`
 #ref_id=`echo "$result" | head -n1 | cut -f4 -d'|'`
 #			echo $result
@@ -182,7 +202,7 @@ do
 	while read ref_id
 	do
 		#check access
-		dbquery="select distinct item_id from term, term_item where term_item.term_id=term.id and ref_id=$ref_id and term.name='view';"
+		dbquery="select distinct item_id from term, term_item where term_item.term_id=term.id and ref_id=$ref_id and term.name='view'"
 
 		if [[ $VERBOSE = y ]] ; then
 			echo $dbquery; echo ""
@@ -203,28 +223,28 @@ do
 		fi
 
 		while read viewer_id
-			  do
-					#echo viewer_id = $viewer_id; echo ""
-					#echo person_id = $person_id; echo ""
-					if [[ $viewer_id = $person_id ]]; then
-						# allowed to show results
-						sqlite3 -header "$database" "$itemquery"; echo ""
-						break
-					fi
-						#viewer_id could be a group
-						#need to search for node
-						dbquery="select distinct item_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and term.name='memberOf' and ref_id in (select distinct id from term_item where term_id=1 and item_id=$viewer_id);"
-						sqlite3 $database "$dbquery" >> "$ramdisk/viewer_ids"
-				done < "$ramdisk/viewer_ids"
+		do
+			#echo viewer_id = $viewer_id; echo ""
+			#echo person_id = $person_id; echo ""
+			if [[ $viewer_id = $person_id ]]; then
+				# allowed to show results
+				sqlite3 -header "$database" "$itemquery"; echo ""
+				break
+			fi
+			#viewer_id could be a group
+			#need to search for node
+			dbquery="select distinct item_id from term, item, term_item where term_item.term_id=term.id and term_item.item_id=item.id and term.name='memberOf' and ref_id in (select distinct id from term_item where term_id=1 and item_id=$viewer_id)"
+			sqlite3 $database "$dbquery" >> "$ramdisk/viewer_ids"
+		done < "$ramdisk/viewer_ids"
 
-				if [[ $VERBOSE = y ]] ; then
-					echo $dbquery; echo ""
-				fi
+		if [[ $VERBOSE = y ]] ; then
+			echo $dbquery; echo ""
+		fi
 
 		echo ""
 
 	done < $ramdisk/ref_ids
-	
+
 	read -n 1 -p "show new (r)ef_id or (t)erm_id? " choice
 	echo ""
 	if [[ $choice == "r" ]] ; then
