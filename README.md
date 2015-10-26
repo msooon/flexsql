@@ -1,5 +1,13 @@
 # flexsql
-flexible structure for sql database to build hirarchy, permissions and various items
+
+The aim of this project is to find one approach with logical principles of computer science 
+to insert and search data in a flexible structure with hirarchy.
+
+The current way is a combined multiple recursive search.
+
+1. Step: building a prototype only to show how the principle could work
+2. Step: compare hirarchical structure ideas and database systems (sql,nosql,...) to find best practice 
+3. Step: try to include in other opensource projects
 
 #init system
 sqlite3 flexsql.db < term.sql 
